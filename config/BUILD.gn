@@ -1128,6 +1128,9 @@ config("symbols") {
       ]
     } else {
       cflags = [ "-g2" ]
+      if (is_clang) {
+        cflags += [ "-fno-limit-debug-info" ]
+      }
     }
     if (use_debug_fission) {
       cflags += [ "-gsplit-dwarf" ]
