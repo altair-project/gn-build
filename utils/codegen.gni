@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+template("codegen") {
+  action("${target_name}_action") {
+    forward_variables_from(invoker, ["script", "sources", "inputs", "args"])
+
+    outputs = []
+    foreach(output, invoker.out_headers + invoker.out_sources) {
+      outputs += ["$target_gen_dir/$output"]
+    }
+  }
+
+  target_path = rebase_path(get_label_info(":${target_name}_action",
+                                           "target_gen_dir"), ".")
+
+  config("${target_name}_config") {
+    include_dirs = []
+    foreach(include, invoker.out_includes) {
+      include_dirs += ["$target_path/$include"]
+    }
+  }
+
+  source_set(target_name) {
+    all_dependent_configs = [":${target_name}_config"]
+    deps = [":${target_name}_action"]
+
+    sources = []
+    foreach(source, invoker.out_sources) {
+      sources += ["$target_path/$source"]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+import("//build/utils/codegen.gni")
+
+
+template("embed") {
+  codegen(target_name) {
+    script = "//build/utils/embed.py"
+    sources = [invoker.file]
+    args = [
+      rebase_path(invoker.file, root_build_dir),
+      rebase_path("$target_gen_dir/${invoker.dir}", root_build_dir),
+      invoker.var
+    ]
+
+    out_headers = ["${invoker.dir}/source.h"]
+    out_includes = [rebase_path(".", root_build_dir)]
+    out_sources = ["${invoker.dir}/source.c"]
+  }
+}
